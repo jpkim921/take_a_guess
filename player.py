@@ -7,3 +7,8 @@ from validators import NumberValidator, NotStringValidator, YesNoValidator
 class Player:
     def __init__(self):
         self.addr = None
+        self.balance = 0
+
+
+    def set_address(self, addr):
+        self.addr = addr
