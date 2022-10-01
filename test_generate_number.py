@@ -1,4 +1,4 @@
-from guessing_game.generate_number import generate_round_one_guess
+from .generate_number import generate_round_one_guess
 
 
 

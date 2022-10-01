@@ -1,9 +1,7 @@
-from prompt_toolkit import prompt, PromptSession
+class Pet:
+    def __init__(self):
+        self.name = "Sam"
 
 
-from validators import NumberValidator
+sam = Pet()
 
-session = PromptSession()
-
-number = int(session.prompt('Give a number: ', validator=NumberValidator()))
-print(f"you typed: {number}")
