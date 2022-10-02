@@ -107,6 +107,8 @@ class GuessGame:
             round += 1
             return round
         else:
+            print("DEV - take ante")
+
             pass
         # pass
 
