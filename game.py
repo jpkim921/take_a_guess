@@ -17,13 +17,13 @@ class GuessGame:
     game_contract = None
 
     def __init__(self, game_contract, ante = 20):
-        self.addr = None
+        self.player_addr = None
         self.game_number = 0
         self.ante = ante # cost of play
         self.game_contract = game_contract
 
-        # initialize player
-        self.player = Player()
+        # player object
+        self.player = None
 
     
     def set_game_contract(self, game_address):
@@ -32,35 +32,27 @@ class GuessGame:
         else:
             self.game_contract = game_address
 
-    # def prompt(self, prompt_text: str) -> str:
-    #     try:
-    #         input = prompt(prompt_text)
-    #     except KeyboardInterrupt as e:
-    #         print(e)
-    #     except EOFError as e:
-    #         print(e)
-
-    #     return input
-
-    # def session_prompt(self, prompt_text: str, validator: None) -> str:
-    #     try:
-    #         if validator:
-    #             input = self.session.prompt(prompt_text, validator=validator())
-    #         else:
-    #             input = self.session.prompt(prompt_text)
-    #         return input
-    #     except KeyboardInterrupt as e:
-    #         print(e)
-    #     except EOFError as e:
-    #         print(e)
-
-
-    def prompt_for_wallet_address(self):
-        addr = prompt('Enter wallet address: ')
+    def initiate_player(self):
+        """
+        Asks for player wallet address.
+        Initiate player class with wallet and game contract address.
+        Update player object with balance.
+        """
+        
+        player_addr = prompt('Enter wallet address: ')
         # need to check and validate the address
         # if not valid then notify and re-prompt else move on
-        self.addr = addr
-        print(f'You entered: \n\t\t{self.addr}')
+        try:
+            
+            player: Player = Player(game_addr=self.game_address)
+            player.set_wallet_address(player_addr)
+            player.update_self()
+            self.player = player
+        except Exception as e:
+            print(f"Error: {e}")
+
+        self.player_addr = player_addr
+        print(f'You entered: \n\t\t{self.player_addr}')
 
 
     def start_game(self) -> bool:
@@ -128,7 +120,7 @@ class GuessGame:
         print("Welcome to the Guessing Game!")
         
         # ask for wallet address
-        self.prompt_for_wallet_address()
+        self.initiate_player()
         
         while True:
             try:
@@ -153,3 +145,30 @@ class GuessGame:
                 break
         
         # print('GoodBye!')
+
+
+
+    # def prompt(self, prompt_text: str) -> str:
+    #     try:
+    #         input = prompt(prompt_text)
+    #     except KeyboardInterrupt as e:
+    #         print(e)
+    #     except EOFError as e:
+    #         print(e)
+
+    #     return input
+
+    # def session_prompt(self, prompt_text: str, validator: None) -> str:
+    #     try:
+    #         if validator:
+    #             input = self.session.prompt(prompt_text, validator=validator())
+    #         else:
+    #             input = self.session.prompt(prompt_text)
+    #         return input
+    #     except KeyboardInterrupt as e:
+    #         print(e)
+    #     except EOFError as e:
+    #         print(e)
+
+
+
