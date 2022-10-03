@@ -14,16 +14,24 @@ class GuessGame:
         5: 375,
     }
 
+    game_contract = None
 
-
-    def __init__(self, ante = 20):
+    def __init__(self, game_contract, ante = 20):
         self.addr = None
         self.game_number = 0
         self.ante = ante # cost of play
+        self.game_contract = game_contract
 
         # initialize player
         self.player = Player()
-        
+
+    
+    def set_game_contract(self, game_address):
+        if game_address == self.game_contract:
+            print("Already set")
+        else:
+            self.game_contract = game_address
+
     # def prompt(self, prompt_text: str) -> str:
     #     try:
     #         input = prompt(prompt_text)
