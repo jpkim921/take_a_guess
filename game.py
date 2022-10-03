@@ -17,13 +17,19 @@ class GuessGame:
     game_contract = None
 
     def __init__(self, game_contract, ante = 20):
-        self.player_addr = None
+        self.wallet_address = None
         self.game_number = 0
         self.ante = ante # cost of play
         self.game_contract = game_contract
 
+        self.current_total_winnings = 0
+        self.current_game_winnings = 0
+
         # player object
-        self.player = None
+        self.player: Player = None
+
+    def connect_to_game_contract(self):
+        pass
 
     
     def set_game_contract(self, game_address):
@@ -39,20 +45,18 @@ class GuessGame:
         Update player object with balance.
         """
         
-        player_addr = prompt('Enter wallet address: ')
-        # need to check and validate the address
-        # if not valid then notify and re-prompt else move on
-        try:
-            
-            player: Player = Player(game_addr=self.game_address)
-            player.set_wallet_address(player_addr)
-            player.update_self()
-            self.player = player
-        except Exception as e:
-            print(f"Error: {e}")
+        # wallet_address = prompt('Enter wallet address: ') # use this when ready to move on from development
+        wallet_address = "0xb5EeC83a336d28175Fc9F376420dceE865546451" # hadcoded for developing
 
-        self.player_addr = player_addr
-        print(f'You entered: \n\t\t{self.player_addr}')
+        try:            
+            player: Player = Player(game_addr=self.game_contract, wallet_addr=wallet_address)
+            self.player = player
+            print("Player Initiated: ")
+        except Exception as e:
+            print(f"Error - GuessGame.initiate_player(): {e}")
+
+        self.wallet_address = wallet_address
+        # print(f'You entered: \n\t\t{self.wallet_address}')
 
 
     def start_game(self) -> bool:
@@ -66,19 +70,32 @@ class GuessGame:
         """
         player has won the game. pay/add payout for the round to player
         """
-        amount = GuessGame.payout[round]
-        print(f"AMOUNT WON IN ROUND {round}", amount)
+        
+                
+        curr_total = self.current_total_winnings
+        curr_game = self.current_game_winnings
         previous_player_bal = self.player.balance
-        self.player.balance += amount
-        new_player_bal = self.player.balance
-        msg = f"""
-            Previous Balance: {previous_player_bal}
-        +          Round Win: {amount}
-        --------------------------------------------
-                              {new_player_bal} 
-        """
-        print(msg)
 
+        # amount won this round
+        round_win = GuessGame.payout[round]
+        print(f"AMOUNT WON IN ROUND {round}", round_win)
+
+        curr_total += (curr_game + round_win)
+
+        self.player.balance += round_win
+        new_player_bal = self.player.balance
+
+        msg = f"""
+                Current Game: {curr_game}
+        +          Round Win: {round_win}
+        --------------------------------------------
+               Current Total: {curr_total} 
+        """
+        
+        self.current_game_winnings = curr_game
+        self.current_total_winnings = curr_total
+
+        print(msg)
 
 
     def play_round(self, round):
@@ -113,6 +130,16 @@ class GuessGame:
         # pass
 
 
+    def player_profile(self):
+        # update player instance before to display the latest info
+        p_info = self.player.update_self()
+        p_into_str = f"""
+        Player -  
+            Address: {p_info[0]}
+            Balance: {p_info[1]}
+        """
+        return p_into_str
+
 
 
     def run(self):
@@ -121,12 +148,20 @@ class GuessGame:
         
         # ask for wallet address
         self.initiate_player()
-        
         while True:
+            
+            print(self.player_profile())
+
             try:
                 # ask if ready to start
                 # yes -> play_round; no -> keep asking if ready
                 if self.start_game():
+                    # player pays ante
+                    self.player.pay_ante(self.ante)
+                    print(self.current_total_winnings)
+                    self.current_total_winnings -= self.ante
+                    print(self.current_total_winnings)
+
                     curr_round = 1
                     self.game_number += 1
                     while curr_round <= 5:
