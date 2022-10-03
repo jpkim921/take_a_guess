@@ -16,23 +16,30 @@ class Player:
         self.game_address = None
 
 
-    def set_address(self, addr):
+    def set_wallet_address(self, addr):
         self.addr = addr
 
     def update_self(self):
+
         print("update_self")
+        print(self.balance)
+        self.balance = self.w3.eth.get_balance(self.addr)
+        print(self.balance)
 
 
     def connect_game_contract(self, game_address):
         self.game_address = game_address
-        w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))
-        if w3.isConnected():
+        try:
+            self.w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))
             self.update_self()
+        except Exception as e:
+            print("Error: ", e)
         
 
         pass
 
 
 player = Player()
+player.set_wallet_address("0xb5EeC83a336d28175Fc9F376420dceE865546451")
 game_contract = "0x97848eA083BB4f8F4dD095226f007Fa30d781316"
 player.connect_game_contract(game_contract)
