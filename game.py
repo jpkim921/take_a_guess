@@ -1,4 +1,7 @@
+import json
+
 from prompt_toolkit import prompt, PromptSession
+from web3 import Web3
 
 from player import Player
 from generate_number import generate_guess
@@ -14,29 +17,42 @@ class GuessGame:
         5: 375,
     }
 
-    game_contract = None
+    game_contract_addr = None
 
-    def __init__(self, game_contract, ante = 20):
+    def __init__(self, game_contract_addr, ante = 20):
         self.wallet_address = None
         self.game_number = 0
         self.ante = ante # cost of play
-        self.game_contract = game_contract
+        self.game_contract_addr = game_contract_addr
+        self.game_contract = None
 
         self.current_total_winnings = 0
         self.current_game_winnings = 0
 
         # player object
         self.player: Player = None
+        
+        # web3 
+        self.w3 = None
+        self.connect_w3()
+        self.connect_to_game_contract()
+
+    def connect_w3(self):
+        self.w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))
+        assert self.w3.isConnected()
 
     def connect_to_game_contract(self):
-        pass
+        with open('./house_abi.json') as f:
+            data = json.load(f)
+            self.game_contract = self.w3.eth.contract(address=self.game_contract_addr, abi=data['abi'])
+
 
     
     def set_game_contract(self, game_address):
-        if game_address == self.game_contract:
+        if game_address == self.game_contract_addr:
             print("Already set")
         else:
-            self.game_contract = game_address
+            self.game_contract_addr = game_address
 
     def initiate_player(self):
         """
@@ -49,7 +65,7 @@ class GuessGame:
         wallet_address = "0xb5EeC83a336d28175Fc9F376420dceE865546451" # hadcoded for developing
 
         try:            
-            player: Player = Player(game_addr=self.game_contract, wallet_addr=wallet_address)
+            player: Player = Player(w3=self.w3, game_addr=self.game_contract_addr, game_contract=self.game_contract, wallet_addr=wallet_address)
             self.player = player
             print("Player Initiated: ")
         except Exception as e:
@@ -158,6 +174,7 @@ class GuessGame:
                 if self.start_game():
                     # player pays ante
                     self.player.pay_ante(self.ante)
+                    
                     print(self.current_total_winnings)
                     self.current_total_winnings -= self.ante
                     print(self.current_total_winnings)

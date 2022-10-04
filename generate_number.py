@@ -5,10 +5,8 @@ def generate_guess(start: int, end: int) -> int:
     """
     returns the target number for player to guess
     """
-    print(f"Target is between {start} and {end}\n")
+    # print(f"Target is between {start} and {end}\n")
     return random.randint(start, end)
-
-
 
 
 def test_generate_guess():
@@ -18,6 +16,6 @@ def test_generate_guess():
     guess = generate_guess(1,4)
     assert guess >= 1 and guess <= 4, "guess should be between 1 and 4 inclusive"
 
-print("start - testing generate guess")
+# print("start - testing generate guess")
 test_generate_guess()
-print("end - testing generate guess\n")
+# print("end - testing generate guess\n")
