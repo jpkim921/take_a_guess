@@ -55,7 +55,7 @@ class Player:
     def pay_ante(self, _amount: int):
         private_key = "0x27f15096a283253760e0d89daa59b9e76e735f13a3f30191153def50b6f9fb94"
  
-       #get the nonce.  Prevents one from sending the transaction twice
+        # get the nonce.  Prevents one from sending the transaction twice
         nonce = self.w3.eth.getTransactionCount(self.addr)
 
         #build a transaction in a dictionary
@@ -67,7 +67,7 @@ class Player:
         }
 
         func_tx = self.game_contract.functions.payAnte().build_transaction(initial_tx)
-        print("func_tx: ", func_tx)
+        # print("func_tx: ", func_tx)
         tx = {**func_tx, 'to': self.game_contract.address}
 
         #sign the transaction
@@ -78,7 +78,7 @@ class Player:
         tx_hash = self.w3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
         #get transaction hash
-        print(self.w3.toHex(tx_hash))
+        print("transaction hash: ", self.w3.toHex(tx_hash))
 
         
 # wallet_address = "0xb5EeC83a336d28175Fc9F376420dceE865546451"

@@ -1,5 +1,5 @@
 {
-    "abi": [
+	"abi": [
 		{
 			"inputs": [],
 			"stateMutability": "nonpayable",
@@ -21,7 +21,7 @@
 					"type": "uint256"
 				}
 			],
-			"name": "Ante",
+			"name": "AntePaid",
 			"type": "event"
 		},
 		{
@@ -142,7 +142,7 @@
 			],
 			"name": "transferToPlayer",
 			"outputs": [],
-			"stateMutability": "payable",
+			"stateMutability": "nonpayable",
 			"type": "function"
 		}
 	]
