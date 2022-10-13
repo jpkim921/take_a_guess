@@ -1,6 +1,7 @@
 from web3 import Web3
 from web3.exceptions import InvalidAddress
 
+from typing import List
 import os
 import json
 import pprint
@@ -17,10 +18,23 @@ class GameConfig:
     }
     
 
-    def __init__(self):
+    def __init__(self, game_contract_address):
+        self.config_template = GameConfig.CONFIG_TEMPLATE
+        self.config_template['game_contract_address'] = game_contract_address
+        self.config = None
         pass
 
-    def create_config_template(self, config_template: str = CONFIG_TEMPLATE, config_path: str = "./gg_config.json"):
+    def get_config_files(self, path = ''):
+        configs = sorted([str(p) for p in Path(path).glob("*_config.json")])
+        if configs:
+            return configs
+        return
+
+
+    def create_config_template(self, config_template: str = None, config_path: str = "./gg_config.json"):
+        if config_template == None:
+            config_template = self.config_template
+
         try:
             with open(config_path, 'w') as config:
                 config.write(json.dumps(config_template))
@@ -44,6 +58,8 @@ class GameConfig:
     def get_config(self, config_path: str = "./gg_config.json"):
         """
         Get the players config file.
+        If config file doesn't exist, it will be created within this function.
+        The config will be saved to self.config for Game instance to use.
         """
         config_file = Path(config_path)    
         if config_file.is_file():
@@ -54,11 +70,35 @@ class GameConfig:
             self.CONFIG_TEMPLATE["address"] = addr
             self.create_config_template(config_path=config_path)
 
-        config = self.read_config(config_path)
-        pp.pprint(config)
+        self.config = self.read_config(config_path)
+        pp.pprint(self.config)
+
+
+    def run_config(self):
+        # get list of config files
+        # if list is empty go directly to creating one
+        # if not empty, display the list of configs and let player choose
+        file_choice = None
+        config_files = self.get_config_files()
+        if config_files:
+            print("Please choose config to use: ")
+            for idx, file in enumerate(config_files):
+                print(f"{idx+1}: {file}")
+
+            file_choice = input("Enter number >>")
+            self.get_config(config_files[file_choice-1])
+            print(self.config)
+        else:
+            self.get_config()
+
+        pass
+    
 
 
 
-# g: GameConfig = GameConfig()
+
+g: GameConfig = GameConfig("0xgamecontract")
 # g.get_config()
-# g.get_config("newone.json")
+# g.get_config("newone_config.json")
+
+g.run_config()
