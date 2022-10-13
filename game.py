@@ -3,6 +3,7 @@ import json
 from prompt_toolkit import prompt, PromptSession
 from web3 import Web3
 
+from game_config import GameConfig
 from player import Player
 from generate_number import generate_guess
 from validators import NumberValidator, NotStringValidator, YesNoValidator
@@ -20,16 +21,24 @@ class GuessGame:
     game_contract_addr = None
 
     def __init__(self, game_contract_addr, owner=None, owner_pk=None, ante = 20):
+        
+        self.game_contract_addr = game_contract_addr
+        self.game_contract = None
+        
+        # run game config script
+        config = GameConfig(game_contract_addr).run_config()
+        self.config = config.config
+
         self.owner = owner or '0x0a8426BD2Fc9A3e48Dc82545fF206d41330a948B'
         self.owner_pk = owner_pk or '0x6e8990d6e7a4703ed270c96b394820f66e5a987c4da67f93d3929d12864ea9bc'
         self.wallet_address = None
         self.game_number = 0
         self.ante = ante # cost of play
-        self.game_contract_addr = game_contract_addr
-        self.game_contract = None
+        
 
         self.current_total_winnings = 0
         self.current_game_winnings = 0
+
 
         # player object
         self.player: Player = None
@@ -70,7 +79,8 @@ class GuessGame:
         """
         
         # wallet_address = prompt('Enter wallet address: ') # use this when ready to move on from development
-        wallet_address = "0xb5EeC83a336d28175Fc9F376420dceE865546451" # hadcoded for developing
+        # wallet_address = "0xb5EeC83a336d28175Fc9F376420dceE865546451" # hadcoded for developing
+        wallet_address = self.config['address']
 
         try:            
             player: Player = Player(w3=self.w3, game_addr=self.game_contract_addr, game_contract=self.game_contract, wallet_addr=wallet_address)
@@ -79,7 +89,7 @@ class GuessGame:
         except Exception as e:
             print(f"Error - GuessGame.initiate_player(): {e}")
 
-        self.wallet_address = wallet_address
+        # self.wallet_address = wallet_address
         # print(f'You entered: \n\t\t{self.wallet_address}')
 
 

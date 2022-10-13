@@ -14,7 +14,7 @@ class GameConfig:
 
     CONFIG_TEMPLATE = {
         "address"     : "Replace address in between quotes",
-        "private_key" : "Replace pk in between quotes",
+        "private_key" : "Copy/Paste P.K. when asked. (Only to pay ante.)",
     }
     
 
@@ -28,8 +28,7 @@ class GameConfig:
         configs = sorted([str(p) for p in Path(path).glob("*_config.json")])
         if configs:
             return configs
-        return
-
+        return []
 
     def create_config_template(self, config_template: str = None, config_path: str = "./gg_config.json"):
         if config_template == None:
@@ -55,7 +54,8 @@ class GameConfig:
         
         return user_address
 
-    def get_config(self, config_path: str = "./gg_config.json"):
+    # def get_config(self, config_path: str = "./gg_config.json"):
+    def get_config(self, config_path: str="./gg_config.json"):
         """
         Get the players config file.
         If config file doesn't exist, it will be created within this function.
@@ -71,34 +71,42 @@ class GameConfig:
             self.create_config_template(config_path=config_path)
 
         self.config = self.read_config(config_path)
-        pp.pprint(self.config)
+        # pp.pprint(self.config)
 
 
     def run_config(self):
+
         # get list of config files
         # if list is empty go directly to creating one
         # if not empty, display the list of configs and let player choose
+
         file_choice = None
         config_files = self.get_config_files()
-        if config_files:
+        if len(config_files) > 1:
             print("Please choose config to use: ")
             for idx, file in enumerate(config_files):
                 print(f"{idx+1}: {file}")
+            print(f"{len(config_files)+1}: Create new config file.")
 
-            file_choice = input("Enter number >>")
-            self.get_config(config_files[file_choice-1])
-            print(self.config)
-        else:
+            choice = int(input("Enter number >>").strip())
+            if choice <= len(config_files):
+                file_choice == choice
+        # elif len(config_files) == 1:
+        #     self.get_config(config_files[0])
+
+        if file_choice == None:
             self.get_config()
+        else:
+            self.get_config(config_files[file_choice-1])
 
-        pass
+        return self
+
+
+
     
 
+# g: GameConfig = GameConfig("0xgamecontract")
+# # g.get_config()
+# # g.get_config("newone_config.json")
 
-
-
-g: GameConfig = GameConfig("0xgamecontract")
-# g.get_config()
-# g.get_config("newone_config.json")
-
-g.run_config()
+# g.run_config()

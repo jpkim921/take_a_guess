@@ -53,7 +53,8 @@ class Player:
 
 
     def pay_ante(self, _amount: int):
-        private_key = "0x27f15096a283253760e0d89daa59b9e76e735f13a3f30191153def50b6f9fb94"
+        private_key = input("Enter private key for wallet address: ").strip()
+        # private_key = "0x27f15096a283253760e0d89daa59b9e76e735f13a3f30191153def50b6f9fb94"
  
         # get the nonce.  Prevents one from sending the transaction twice
         nonce = self.w3.eth.getTransactionCount(self.addr)
