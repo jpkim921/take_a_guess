@@ -206,7 +206,17 @@ pip-selfcheck.json
 
 
 # Extras
+.DS_Store
 notes.md
 sandbox.py
 house.sol
 *_config.json
+
+
+# Brownie
+__pycache__
+.env
+.history
+.hypothesis/
+build/
+reports/
